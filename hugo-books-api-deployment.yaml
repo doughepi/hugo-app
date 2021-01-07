@@ -2,34 +2,42 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: hugo
-  name: hugo-deployment
+  name: hugo-books-api-deployment
   labels:
     app: hugo
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: hugo
+      app: hugo-books-api
   template:
     metadata:
       namespace: hugo
       labels:
-        app: hugo
+        app: hugo-books-api
     spec:
       serviceAccountName: hugo-service-account
       securityContext:
             runAsUser: 1000
             fsGroup: 2000
       containers:
-        - name: hugo-container
+        - name: hugo-books-api-container
           securityContext:
             allowPrivilegeEscalation: false
-          image: docker.generalmills.com/ubuntu:bionic
-          command: ["sleep"]
-          args: ["infinity"]
+          image: hugo-books-api:latest
           volumeMounts:
             - mountPath: "/mnt/hugo-storage"
               name: hugo-volume
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - name: http
+              containerPort: 5000
       volumes:
         - name: hugo-volume
           persistentVolumeClaim:
