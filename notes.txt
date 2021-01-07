@@ -1,0 +1,70 @@
+Build image.
+
+```
+docker build -t hugo-books-api:latest .
+```
+
+Install namespace.
+
+```
+kubectl apply -f hugo-ns.yaml
+```
+
+Install deployment.
+
+```
+kubectl apply -f hugo-books-api-deployment.yaml -n hugo
+kubectl get all -n hugo
+kubectl get deployments -n hugo
+```
+
+- Deployment will not start because of volume not created yet.
+
+```
+kubectl apply -f hugo-claim.yaml -n hugo
+```
+
+- Deployment will not start because of service account not created yet.
+
+```
+kubectl describe replicaset -n hugo
+kubectl apply -f hugo-serviceaccount.yaml -n hugo
+```
+
+Install service.
+
+```
+kubectl apply -f hugo-books-api-service.yaml
+```
+
+- Port forward to check working.
+
+```
+kubectl port-forward service/hugo-books-api-service 5000:80 -n hugo
+```
+
+Apply ingress.
+
+- Need nginx-ingress-controller.
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.43.0/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f hugo-ingress.yaml -n hugo
+```
+
+Apply horizontal pod autoscaler.
+
+```
+kubectl apply -f hugo-books-api-hpa.yaml -n hugo
+```
+
+Show pods.
+
+```
+kubectl get all -n hugo
+```
+
+Show role.
+
+
+Show rolebinding.
