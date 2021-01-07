@@ -25,6 +25,7 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
           image: hugo-books-api:latest
+          imagePullPolicy: Never
           volumeMounts:
             - mountPath: "/mnt/hugo-storage"
               name: hugo-volume
@@ -38,6 +39,18 @@ spec:
           ports:
             - name: http
               containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 1
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
       volumes:
         - name: hugo-volume
           persistentVolumeClaim:

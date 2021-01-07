@@ -1,11 +1,17 @@
 
+import json
+
 from flask import Flask
+from pathlib import Path
 
 app = Flask(__name__)
 
 BOOKS = [{'id': 1, 'title': 'Moby Dick'}, {'id': 2, 'title': "I can't think of another title"}]
 
-with os.open('/mnt/hugo-storage/books.txt', 'w') as fp:
+books_directory_path = Path('/mnt/hugo-storage')
+books_file_path = books_directory_path / "books.txt"
+books_directory_path.mkdir(parents=True, exist_ok=True)
+with open(books_file_path, 'w') as fp:
     json.dump(BOOKS, fp)
 
 @app.route('/health')
