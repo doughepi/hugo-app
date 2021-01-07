@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hugo
+  name: hugo-deployment
+  labels:
+    app: hugo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hugo
+  template:
+    metadata:
+      namespace: hugo
+      labels:
+        app: hugo
+    spec:
+      serviceAccountName: hugo-service-account
+      securityContext:
+            runAsUser: 1000
+            fsGroup: 2000
+      containers:
+        - name: hugo-container
+          securityContext:
+            allowPrivilegeEscalation: false
+          image: docker.generalmills.com/ubuntu:bionic
+          command: ["sleep"]
+          args: ["infinity"]
+          volumeMounts:
+            - mountPath: "/mnt/hugo-storage"
+              name: hugo-volume
+      volumes:
+        - name: hugo-volume
+          persistentVolumeClaim:
+            claimName: hugo-persistent-volume-claim
